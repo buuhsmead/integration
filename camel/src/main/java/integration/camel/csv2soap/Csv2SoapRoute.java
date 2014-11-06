@@ -16,6 +16,8 @@ public class Csv2SoapRoute extends RouteBuilder {
 	private static final String USER = "user";
 	private static final String PASSWORD = "password";
 	private static final String LINE = "line";
+	private static final String REQUEST_MESSAGE = "RequestMessage";
+	private static final String RESPONSE_MESSAGE = "ResponseMessage";
 
 	@Override
 	public void configure() throws Exception {
@@ -45,6 +47,21 @@ public class Csv2SoapRoute extends RouteBuilder {
 						+ ", TIMESTAMP: ${header." + TIMESTAMP + "}")
 				.split(body().tokenize("\n"))
 				.streaming()
+				.to("direct:process")
+				.choice()
+				.when(property(RESPONSE_MESSAGE).not().contains("soap:Body"))
+				.setHeader("CamelFileName",
+						simple("${property." + FILENAME + "}.success"))
+				.transform(simple("${property." + LINE + "}\\n"))
+				.to("file:{{output.dir}}?fileExist=Append")
+				.otherwise()
+				.setHeader("CamelFileName",
+						simple("${property." + FILENAME + "}.fail"))
+				.transform(simple("${property." + LINE + "}\\n"))
+				.to("file:{{output.dir}}?fileExist=Append");
+
+
+		from("direct:process")
 				.setProperty(LINE, simple("${body}"))
 				.unmarshal(csv)
 				.transform(simple("${body[0]}"))
@@ -57,27 +74,15 @@ public class Csv2SoapRoute extends RouteBuilder {
 				.simple("file:{{template.dir}}/${property." + DATATYPE
 						+ "}.xml")
 				.to("velocity:dummy")
+				.setProperty(REQUEST_MESSAGE, simple("${body}"))
 				.setProperty(
 						URL,
 						simple("${properties:url}/${property." + DATATYPE + "}"))
 				.log("${property." + URL + "}")
 				.setHeader(Exchange.HTTP_METHOD, constant("POST"))
 				.log("HTTP_METHOD: ${headers." + Exchange.HTTP_METHOD + "}")
-				.recipientList(simple("${property." + URL + "}")).choice()
-				.when(body().not().contains("soapenv:Body")).to("direct:fail")
-				.otherwise().to("direct:success");
-
-		from("direct:fail")
-				.log("ERROR: ${property." + LINE + "} MESSAGE: ${body}")
-				.transform(simple("${property." + LINE + "}\\n"))
-				.setHeader("CamelFileName",
-						simple("${property." + FILENAME + "}.fail"))
-				.to("file:{{output.dir}}?fileExist=Append");
-		from("direct:success")
-				.log("OK: ${property." + LINE + "} MESSAGE: ${body}")
-				.transform(simple("${property." + LINE + "}\\n"))
-				.setHeader("CamelFileName",
-						simple("${property." + FILENAME + "}.success"))
-				.to("file:{{output.dir}}?fileExist=Append");
+				.recipientList(simple("${property." + URL + "}"))
+				.log("${body}").setProperty(RESPONSE_MESSAGE, simple("${body}"));
+		
 	}
 }
