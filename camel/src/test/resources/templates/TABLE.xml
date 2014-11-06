@@ -1,0 +1,7 @@
+<record>
+	<user>${headers.user}</user>
+	<password>${headers.password}</password>
+	<timestamp>${headers.timestamp}</timestamp>
+	<base>${headers.values[0]}</base>
+	<first>${headers.values[1]}</first>
+</record>
