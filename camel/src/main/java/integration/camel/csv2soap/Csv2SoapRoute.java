@@ -81,6 +81,7 @@ public class Csv2SoapRoute extends RouteBuilder {
 				.log("${property." + URL + "}")
 				.setHeader(Exchange.HTTP_METHOD, constant("POST"))
 				.log("HTTP_METHOD: ${headers." + Exchange.HTTP_METHOD + "}")
+				.log("${body}")
 				.recipientList(simple("${property." + URL + "}"))
 				.log("${body}").setProperty(RESPONSE_MESSAGE, simple("${body}"));
 		

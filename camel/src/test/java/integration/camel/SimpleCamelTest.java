@@ -23,10 +23,10 @@ public class SimpleCamelTest extends CamelIntegrationTestSupport {
 		return "classpath:camel.properties";
 	}
 
-	@Test
+	//@Test
 	public void testImportdata1() throws Exception {
 		//importCSV("TABLE-2002-05-30T09:00:00.CSV");
-		Thread.sleep(50000);
+		//Thread.sleep(50000);
 	}
 
 	private void importCSV(String string) {
