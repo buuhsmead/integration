@@ -17,7 +17,6 @@ public class Csv2SoapRoute extends RouteBuilder {
 	private static final String PASSWORD = "password";
 	private static final String LINE = "line";
 	private static final String REQUEST_MESSAGE = "RequestMessage";
-	private static final String RESPONSE_MESSAGE = "ResponseMessage";
 
 	@Override
 	public void configure() throws Exception {
@@ -45,21 +44,22 @@ public class Csv2SoapRoute extends RouteBuilder {
 				.log("FILENAME: ${header." + FILENAME + "}"
 						+ ", DATATYPE: ${header." + DATATYPE + "}"
 						+ ", TIMESTAMP: ${header." + TIMESTAMP + "}")
-				.split(body().tokenize("\n"))
-				.streaming()
-				.to("direct:process")
-				.choice()
-				.when(property(RESPONSE_MESSAGE).not().contains("soap:Body"))
-				.setHeader("CamelFileName",
-						simple("${property." + FILENAME + "}.success"))
-				.transform(simple("${property." + LINE + "}\\n"))
-				.to("file:{{output.dir}}?fileExist=Append")
-				.otherwise()
+				.split(body().tokenize("\n")).streaming().to("direct:process")
+				;
+
+		from("direct:fail")
+				.log("FAIL: ${body}")
 				.setHeader("CamelFileName",
 						simple("${property." + FILENAME + "}.fail"))
 				.transform(simple("${property." + LINE + "}\\n"))
 				.to("file:{{output.dir}}?fileExist=Append");
 
+		from("direct:success")
+				.log("SUCCESS: ${body}")
+				.setHeader("CamelFileName",
+						simple("${property." + FILENAME + "}.success"))
+				.transform(simple("${property." + LINE + "}\\n"))
+				.to("file:{{output.dir}}?fileExist=Append");
 
 		from("direct:process")
 				.setProperty(LINE, simple("${body}"))
@@ -83,7 +83,11 @@ public class Csv2SoapRoute extends RouteBuilder {
 				.log("HTTP_METHOD: ${headers." + Exchange.HTTP_METHOD + "}")
 				.log("${body}")
 				.recipientList(simple("${property." + URL + "}"))
-				.log("${body}").setProperty(RESPONSE_MESSAGE, simple("${body}"));
-		
+				.convertBodyTo(String.class)
+				.choice()
+				.when(body().contains("faultcode")).to("direct:fail")
+				.otherwise().to("direct:success")
+				;
+
 	}
 }
