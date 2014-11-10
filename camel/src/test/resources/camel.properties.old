@@ -1,7 +1,0 @@
-import.dir=target/import
-output.dir=target/output
-template.dir=src/test/resources/templates
-
-url=http://172.16.4.155:8765/ws
-user=WSTESTINI
-password=Welkom01
