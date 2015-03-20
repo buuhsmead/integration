@@ -1,6 +1,6 @@
 #  Simple Timer #
  
-## Build and deploy on fuse server;
+## Build and deploy on fuse server
 
 1) create the file FUSE_DIR/etc/simpletimer.cfg with contents: 
 simpletimer.period=1000
