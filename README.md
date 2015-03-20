@@ -1,1 +1,1 @@
-# Integration project 
+# Camel examples
