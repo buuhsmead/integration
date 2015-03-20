@@ -2,7 +2,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>integration.camel</groupId>
-	<artifactId>csv2soap</artifactId>
+	<artifactId>simpletimer</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<properties>
 		<!-- Define the version of JBoss' Java EE 6 APIs and Tools we want to import. -->
@@ -29,11 +29,6 @@
 			<artifactId>commons-io</artifactId>
 			<version>1.3.2</version>
 			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.camel</groupId>
-			<artifactId>camel-velocity</artifactId>
-			<version>${camel.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.camel</groupId>
