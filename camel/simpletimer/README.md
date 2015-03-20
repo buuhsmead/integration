@@ -1,9 +1,7 @@
-#################
 #  Simple Timer #
-#################
  
-# Build and deploy on fuse server;
-######################################
+## Build and deploy on fuse server;
+
 1) create the file FUSE_DIR/etc/simpletimer.cfg with contents: 
 simpletimer.period=1000
 
@@ -14,8 +12,7 @@ simpletimer.period=1000
 4) the FUSE_DIR/data/log/fuse.log will show the messages
 
 
-# Creating additional unit tests
-######################################
+## Creating additional unit tests
 a) Each unit test class should extend from integration.camel.CamelIntegrationTestSupport
 
 b) implement the method "routes()" to return an instance of your routes
